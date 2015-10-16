@@ -43,7 +43,6 @@ def loadRecords(token, fromDate: str, toDate: str):
 		return []
 
 	r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate))
-	print(r.json())
 	if r.status_code == requests.codes.ok:
 		records = []
 		try:
