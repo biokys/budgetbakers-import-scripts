@@ -16,19 +16,19 @@ Required parameters are sent to script using named params as it is common for ot
 #### Successful
 Script should return output as JSON string by printing it to `stdout` and exiting with return code `0`. So far two types of output are supported. One which returns list of records which will be added to Budgetbakers app:
 ```
-	[{
-		'amount': 123.45,               # required decimal
-		'date': '2015-10-16T15:28:19Z', # ISO8601 with time and zone
-		'note': 'Some note',            # optional string
-		'currency': 'USD'               # optional ISO4217 currency code
-	}]
+    [{
+        'amount': 123.45,               # required decimal
+        'date': '2015-10-16T15:28:19Z', # ISO8601 with time and zone
+        'note': 'Some note',            # optional string
+        'currency': 'USD'               # optional ISO4217 currency code
+    }]
 ```
 or one which returns closing amount of bank account. In this case one record will be generated in application which will align amount in app with amount returned from script:
 ```
-	{
-		'amount': 123.45,               # required decimal
-		'currency': 'USD'               # optional ISO4217 currency code
-	}
+    {
+        'amount': 123.45,               # required decimal
+        'currency': 'USD'               # optional ISO4217 currency code
+    }
 ```
 
 
@@ -38,13 +38,13 @@ In case of error script should output info message to `stderr` and return non-ze
 
 Info message has following format:
 ```
-	{
-		'statusCode': 1,									# <0;127> return code of script
-		'fields': {												# (empty) map of fields with error description
-			'token': 'Invalid token'				# {fieldName (from params) -> Error description}
-		},
-		'description': 'Inaccessible API'	# General error descriptions - when error is not in fields
-	}
+    {
+        'statusCode': 1,                   # <0;127> return code of script
+        'fields': {                        # (empty) map of fields with error description
+            'token': 'Invalid token'       # {fieldName (from params) -> Error description}
+        },
+        'description': 'Inaccessible API'  # General error descriptions - when error is not in fields
+    }
 ```
 
 So far there are defined following return codes on which BudgetBakers system reacts differently:
