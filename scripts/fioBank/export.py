@@ -9,14 +9,27 @@ import dateutil.parser
 
 API_URL = 'https://www.fio.cz/ib_api/rest/periods/{token}/{fromDate}/{toDate}/transactions.json'
 
+ERR_GENERAL = 1
+ERR_RECOVERABLE = 2
+ERR_INVALID_PARAM = 20
 
 class BadResponse(Exception):
 	pass
 
 
-# Print to stderr
-def perr(s, *args):
-	print(s.format(*args), file = sys.stderr)
+# Print error JSON to stderr
+# - statusCode: <0;126> number defining script return code
+# - fields    : {'errorFieldName': 'error description'}
+def exitWith(statusCode: int, fields: dict = None, desc: str = None):
+	msg = {
+		'statusCode': statusCode,
+		'fields': fields if fields is not None else {}
+	}
+	if desc is not None:
+		msg['description'] = desc
+
+	print(json.dumps(msg), file = sys.stderr)
+	sys.exit(statusCode)
 
 
 def toDateStr(dt):
@@ -42,33 +55,39 @@ def loadRecords(token, fromDate: str, toDate: str):
 	if fromDate == toDate:
 		return []
 
-	r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate))
-	if r.status_code == requests.codes.ok:
-		records = []
-		try:
-			rj = r.json()
-			transList = rj['accountStatement']['transactionList']
+	try:
+		r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate), timeout = 5) # 5s
+		if r.status_code == requests.codes.ok:
+			records = []
+			try:
+				rj = r.json()
+				transList = rj['accountStatement']['transactionList']
 
-			# Only if there are transactions
-			if transList is not None:
-				currency = rj['accountStatement']['info']['currency']
-				for transaction in transList['transaction']:
-					records.append({
-						'note': getNote(transaction),
-						'amount': getAmount(transaction),
-						'date': getDate(transaction),
-						'currency': currency
-					})
+				# Only if there are transactions
+				if transList is not None:
+					currency = rj['accountStatement']['info']['currency']
+					for transaction in transList['transaction']:
+						records.append({
+							'note': getNote(transaction),
+							'amount': getAmount(transaction),
+							'date': getDate(transaction),
+							'currency': currency
+						})
 
-			return records
-		except TypeError as e:
-			raise BadResponse('Unexpected format of response = {0}'.format(e), e)
+				return records
+			except TypeError as e:
+				exitWith(ERR_GENERAL)
 
-	elif r.status_code == 409:
-		raise BadResponse('Script called multiple times in 30s window which is forbidden by bank API. Try again later.')
+		elif r.status_code == 409:
+			exitWith(ERR_RECOVERABLE, desc = 'Script called multiple times in 30s window which is forbidden by bank API. Try again later.')
 
-	else:
-		raise BadResponse('Failed with code = {0} and text = {1}'.format(r.status_code, r.text))
+		else:
+			exitWith(ERR_GENERAL, desc = 'Failed with code = {0} and text = {1}'.format(r.status_code, r.text))
+
+	except requests.exceptions.Timeout as e:
+		# FIO API does not respond to invalid token in a nice way - it timeots for 30s and then returns HTTP500
+		# Therefore we'll wait some time and then decide that token is invalid
+		exitWith(ERR_INVALID_PARAM, {'token': 'Invalid token'})
 
 
 
@@ -91,13 +110,5 @@ if __name__ == '__main__':
 	fromDate = dateutil.parser.parse(lastRunDate or initRunDate)
 	toDate = datetime.datetime.now()
 
-	try:
-		print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate)), indent=4, separators=(',', ': ')))
-		sys.exit(0)
-	except BadResponse as e:
-		perr(str(e))
-		sys.exit(1)
-
-
-
-
+	print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate)), indent=4, separators=(',', ': ')))
+	sys.exit(0)
