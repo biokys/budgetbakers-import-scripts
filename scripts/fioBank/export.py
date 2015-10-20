@@ -7,7 +7,10 @@ import dateutil.parser
 # Script for importing records from FIO Bank. For usage see --help
 #
 
-API_URL = 'https://www.fio.cz/ib_api/rest/periods/{token}/{fromDate}/{toDate}/transactions.json'
+REQUEST_TIMEOUT = 5 # second
+
+API_URL_BASE='https://www.fio.cz/ib_api/rest'
+API_URL = '{base}{uri}'.format(base = API_URL_BASE, uri = '/periods/{token}/{fromDate}/{toDate}/transactions.json')
 
 ERR_GENERAL = 1
 ERR_RECOVERABLE = 2
@@ -15,6 +18,15 @@ ERR_INVALID_PARAM = 20
 
 class BadResponse(Exception):
 	pass
+
+
+# Checks whether API is accessible (true/false)
+def isApiAccessible():
+	try:
+		r = requests.get(API_URL_BASE, timeout = REQUEST_TIMEOUT)
+		return True
+	except requests.exceptions.Timeout as e:
+		return False
 
 
 # Print error JSON to stderr
@@ -56,7 +68,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 		return []
 
 	try:
-		r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate), timeout = 5) # 5s
+		r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate), timeout = REQUEST_TIMEOUT)
 		if r.status_code == requests.codes.ok:
 			records = []
 			try:
@@ -87,8 +99,10 @@ def loadRecords(token, fromDate: str, toDate: str):
 	except requests.exceptions.Timeout as e:
 		# FIO API does not respond to invalid token in a nice way - it timeots for 30s and then returns HTTP500
 		# Therefore we'll wait some time and then decide that token is invalid
-		exitWith(ERR_INVALID_PARAM, {'token': 'Invalid token'})
-
+		if isApiAccessible():
+			exitWith(ERR_INVALID_PARAM, {'token': 'Invalid token'})
+		else:
+			exitWith(ERR_GENERAL, desc = 'Inaccessible API')
 
 
 if __name__ == '__main__':
