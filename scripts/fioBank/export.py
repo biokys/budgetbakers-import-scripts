@@ -13,7 +13,8 @@ API_URL_BASE='https://www.fio.cz/ib_api/rest'
 API_URL = '{base}{uri}'.format(base = API_URL_BASE, uri = '/periods/{token}/{fromDate}/{toDate}/transactions.json')
 
 ERR_GENERAL = 1
-ERR_RECOVERABLE = 2
+ERR_EARLY_CALL = 2
+ERR_SERVICE_UNAVAILABLE = 3
 ERR_INVALID_PARAM = 20
 
 class BadResponse(Exception):
@@ -91,7 +92,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 				exitWith(ERR_GENERAL)
 
 		elif r.status_code == 409:
-			exitWith(ERR_RECOVERABLE, desc = 'Script called multiple times in 30s window which is forbidden by bank API. Try again later.')
+			exitWith(ERR_EARLY_CALL, desc = 'Script called multiple times in 30s window which is forbidden by bank API. Try again later.')
 
 		else:
 			exitWith(ERR_GENERAL, desc = 'Failed with code = {0} and text = {1}'.format(r.status_code, r.text))
@@ -102,7 +103,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 		if isApiAccessible():
 			exitWith(ERR_INVALID_PARAM, {'token': 'Invalid token'})
 		else:
-			exitWith(ERR_GENERAL, desc = 'Inaccessible API')
+			exitWith(ERR_SERVICE_UNAVAILABLE, desc = 'Inaccessible API')
 
 
 if __name__ == '__main__':
@@ -124,5 +125,5 @@ if __name__ == '__main__':
 	fromDate = dateutil.parser.parse(lastRunDate or initRunDate)
 	toDate = datetime.datetime.now()
 
-	print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate)), indent=4, separators=(',', ': ')))
+	print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate))))
 	sys.exit(0)

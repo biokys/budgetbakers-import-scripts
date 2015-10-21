@@ -49,5 +49,6 @@ Info message has following format:
 
 So far there are defined following return codes on which BudgetBakers system reacts differently:
  * `ERR_GENERAL = 1` - Something bad happened - developers should be notified (e.g. API is not accessible, unexpected response from server, ...)
- * `ERR_RECOVERABLE = 2` - Failed to retrieve data, try later (e.g. when Bank API can be accessed only once in some time window e.g. once per hour and script is called more often)
+ * `ERR_EARLY_CALL = 2` - Failed to retrieve data because script exceeded maximum call times of resource per time frame.
+ * `ERR_SERVICE_UNAVAILABLE = 3` - 3rd party resource is not available. BudgetBakers system will try to call it a bit later.
  * `ERR_INVALID_PARAM = 20` - Invalid parameter value sent to script - user will be notified (e.g. invalid API token)
