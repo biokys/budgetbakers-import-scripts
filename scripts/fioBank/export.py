@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, requests, json, argparse, datetime
+import sys, requests, json, argparse, datetime, urllib
 import dateutil.parser
 
 #
@@ -69,7 +69,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 		return []
 
 	try:
-		r = requests.get(API_URL.format(token = token, fromDate = fromDate, toDate = toDate), timeout = REQUEST_TIMEOUT)
+		r = requests.get(API_URL.format(token = urllib.parse.quote_plus(token), fromDate = fromDate, toDate = toDate), timeout = REQUEST_TIMEOUT)
 		if r.status_code == requests.codes.ok:
 			records = []
 			try:
