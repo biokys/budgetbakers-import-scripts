@@ -65,13 +65,13 @@ def loadRecords(token, fromDate: str, toDate: str):
 
 	# If dates are same FIO API returns all records for given day (e.g. 2015-10-16) which may lead to duplicate records
 	# if script is run more times per day. Therefore records are fetched only for previous days.
-	if fromDate == toDate:
-		return []
-
 	try:
 		r = requests.get(API_URL.format(token = urllib.parse.quote_plus(token), fromDate = fromDate, toDate = toDate), timeout = REQUEST_TIMEOUT)
 		if r.status_code == requests.codes.ok:
 			records = []
+
+			if fromDate == toDate:
+				return records
 			try:
 				rj = r.json()
 				transList = rj['accountStatement']['transactionList']
