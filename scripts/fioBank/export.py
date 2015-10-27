@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
 	# FIO API works only with dates (without time). So always align 'to' time to start of today so messages are not duplicated
 	fromDate = dateutil.parser.parse(lastRunDate or initRunDate)
-	toDate = datetime.datetime.now()
+	toDate = datetime.datetime.now() - datetime.timedelta(days = 1)
 
 	print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate))))
 	sys.exit(0)
