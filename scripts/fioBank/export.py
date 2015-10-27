@@ -117,8 +117,8 @@ if __name__ == '__main__':
 		help = "Access token for FIO Bank API")
 	parser.add_argument("--lastRunDate", dest = "lastRunDate", metavar = "YYYY-MM-DD'T'HH:mm:ss.SSS'Z",
 		help = "Date and time of last successful run as ISO8601 UTC format. If script is run for the first time this parameter won't be available")
-	parser.add_argument("--initRunDate", dest = "initRunDate", metavar = "YYYY-MM-DD'T'HH:mm:ss.SSS'Z",
-		help = "Date and time from when to start to pull records from API. Used mostly for sript first run when 'lastRunDate' is not available yet")
+	parser.add_argument("--initRunDate", dest = "initRunDate", metavar = "YYYY-MM-DD",
+		help = "Date from when to start to pull records from API. Used mostly for sript first run when 'lastRunDate' is not available yet")
 
 	args = parser.parse_args()
 
