@@ -113,11 +113,11 @@ def loadRecords(token, fromDate: str, toDate: str):
 
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description = 'Fio Bank custom script for integration with BudgetBakers app')
-	parser.add_argument("--token", dest = "token", metavar = "TOKEN",
+	parser.add_argument("--token", required = True, dest = "token", metavar = "TOKEN",
 		help = "Access token for FIO Bank API")
 	parser.add_argument("--lastRunDate", dest = "lastRunDate", metavar = "YYYY-MM-DD'T'HH:mm:ss.SSS'Z",
 		help = "Date and time of last successful run as ISO8601 UTC format. If script is run for the first time this parameter won't be available")
-	parser.add_argument("--initRunDate", dest = "initRunDate", metavar = "YYYY-MM-DD",
+	parser.add_argument("--initRunDate", required = True, dest = "initRunDate", metavar = "YYYY-MM-DD",
 		help = "Date from when to start to pull records from API. Used mostly for sript first run when 'lastRunDate' is not available yet")
 
 	args = parser.parse_args()
