@@ -51,7 +51,7 @@ def exitWith(statusCode: int, fields: dict = None, desc: str = None):
 
 
 def toDateStr(dt):
-	return datetime.datetime.strftime(dt.astimezone(TZ), '%Y-%m-%d')
+	return datetime.datetime.strftime(dt, '%Y-%m-%d')
 
 
 # Loads records from bank API. Returns either list of records {'note','amount','date'} or throws BadRecord exception if
@@ -127,8 +127,12 @@ if __name__ == '__main__':
 	initRunDate = args.initRunDate
 
 	# FIO API works only with dates (without time). So always align 'to' time to start of today so messages are not duplicated
-	fromDate = dateutil.parser.parse(lastRunDate) if lastRunDate else TZ.localize(dateutil.parser.parse(initRunDate))
+	fromDate = dateutil.parser.parse(lastRunDate).astimezone(TZ) if lastRunDate else TZ.localize(dateutil.parser.parse(initRunDate))
 	toDate = TZ.localize(datetime.datetime.now() - datetime.timedelta(days = 1))
+
+	# Take all records from following day - all records should be imported from this day
+	if lastRunDate:
+		fromDate = (fromDate + datetime.timedelta(days = 1))
 
 	print(json.dumps(loadRecords(token, toDateStr(fromDate), toDateStr(toDate))))
 	sys.exit(0)
