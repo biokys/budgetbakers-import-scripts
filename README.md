@@ -9,7 +9,7 @@ You can inspire yourself by looking at [example custom script](https://github.co
 ## Script structure
 
 ### Input
-Required parameters are sent to script using named params as it is common for other scripts (e.g. `--token TOKEN` etc.). Script may define input parameters that it needs for it's run (such as token to API etc.) and retrieves one additional parameter `--lastRunDate` which is, surprisingly, date of last successful script run (this parameter won't be available if script is run for the first time).
+Required parameters are sent to script using named params as it is common for other scripts (e.g. `--token TOKEN` etc.). Script may define input parameters that it needs for it's run (such as token to API etc.) and retrieves one additional parameter `--lastRunDate` which is, surprisingly, date of last successful script run (this parameter won't be available if script is run for the first time). Custom script has to document all required parameters and their format that it needs to receive from BudgetBakers system in README file and also in `--help` command of script.
 
 ### Output
 
@@ -52,3 +52,5 @@ So far there are defined following return codes on which BudgetBakers system rea
  * `ERR_EARLY_CALL = 2` - Failed to retrieve data because script exceeded maximum call times of resource per time frame.
  * `ERR_SERVICE_UNAVAILABLE = 3` - 3rd party resource is not available. BudgetBakers system will try to call it a bit later.
  * `ERR_INVALID_PARAM = 20` - Invalid parameter value sent to script - user will be notified (e.g. invalid API token)
+
+ Should you require more specific error code for your custom script, feel free to send pull request alongside with your integration script.
