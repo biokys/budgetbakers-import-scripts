@@ -81,7 +81,8 @@ def loadRecords(token, fromDate: str, toDate: str):
 							'note': rutil.stripNoteInfo(rutil.getNote(transaction)),
 							'amount': rutil.getAmount(transaction),
 							'date': rutil.getDate(transaction),
-							'currency': currency
+							'currency': currency,
+							'flags': rutil.getRecordFlags(transaction)
 						})
 
 				return records

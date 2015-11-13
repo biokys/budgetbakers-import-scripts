@@ -7,6 +7,11 @@ PREF_BUY = 'Nákup: '
 # Withdrawal record
 PREF_WTH = 'Výběr z bankomatu: '
 
+#
+# Record flags
+#
+FLAG_WITHDRAWAL = 'WITHDRAWAL'
+
 
 def isBuyRecNote(note):
 	'''
@@ -54,3 +59,16 @@ def getDate(transaction):
 	#2015-10-16+0200 => 2015-10-16T00:00:00+0200
 	d = transaction['column0']['value']
 	return d[:10] + 'T00:00:00.000' + d[10:]
+
+
+def getRecordFlags(transaction):
+	'''
+	Record flags e.g. is withdraval etc.
+	'''
+	flags = []
+	note = getNote(transaction)
+
+	if isWithdrawalRecNote(note):
+		flags.append(FLAG_WITHDRAWAL)
+
+	return flags
