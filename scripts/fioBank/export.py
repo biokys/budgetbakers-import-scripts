@@ -5,6 +5,8 @@ import dateutil.parser
 
 from pytz import timezone
 
+import recordutils as rutil
+
 #
 # Script for importing records from FIO Bank. For usage see --help
 #
@@ -57,35 +59,6 @@ def toDateStr(dt):
 # Loads records from bank API. Returns either list of records {'note','amount','date'} or throws BadRecord exception if
 # failed to retrieve records because of any error
 def loadRecords(token, fromDate: str, toDate: str):
-	def getNote(transaction):
-		return '' if transaction['column16'] is None else transaction['column16']['value']
-
-
-	def stripNoteInfo(note: str):
-		'''
-		Strip useless info from record note
-		'''
-		PREF_BUY = 'Nákup: '
-		PREF_WTH = 'Výběr z bankomatu: '
-
-		if note.startswith(PREF_BUY):
-			note = note[len(PREF_BUY):]
-			note = note.split(', dne')[0]
-		elif note.startswith(PREF_WTH):
-			note = note[len(PREF_WTH):]
-			note = note.split(', dne')[0]
-
-		return note
-
-
-	def getAmount(transaction):
-		return transaction['column1']['value']
-
-
-	def getDate(transaction):
-		#2015-10-16+0200 => 2015-10-16T00:00:00+0200
-		d = transaction['column0']['value']
-		return d[:10] + 'T00:00:00.000' + d[10:]
 
 	# If dates are same FIO API returns all records for given day (e.g. 2015-10-16) which may lead to duplicate records
 	# if script is run more times per day. Therefore records are fetched only for previous days.
@@ -105,9 +78,9 @@ def loadRecords(token, fromDate: str, toDate: str):
 					currency = rj['accountStatement']['info']['currency']
 					for transaction in transList['transaction']:
 						records.append({
-							'note': stripNoteInfo(getNote(transaction)),
-							'amount': getAmount(transaction),
-							'date': getDate(transaction),
+							'note': rutil.stripNoteInfo(rutil.getNote(transaction)),
+							'amount': rutil.getAmount(transaction),
+							'date': rutil.getDate(transaction),
 							'currency': currency
 						})
 
