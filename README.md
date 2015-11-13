@@ -20,7 +20,8 @@ Script should return output as JSON string by printing it to `stdout` and exitin
         'amount': 123.45,               # required decimal
         'date': '2015-10-16T15:28:19Z', # ISO8601 with time and zone
         'note': 'Some note',            # optional string
-        'currency': 'USD'               # optional ISO4217 currency code
+        'currency': 'USD',              # optional ISO4217 currency code
+        'flags': [...]                  # list of additional flags from enum (see below)
     }]
 ```
 or one which returns closing amount of bank account. In this case one record will be generated in application which will align amount in app with amount returned from script:
@@ -30,6 +31,11 @@ or one which returns closing amount of bank account. In this case one record wil
         'currency': 'USD'               # optional ISO4217 currency code
     }
 ```
+
+##### Record flags
+Record flags may hold additional meta information about record e.g. if record is withdrawal, BudgetBakers system will act accordingly (removing amount from one account e.g. bank account and adding to another e.g. wallet). All recognizable flags are listed below:
+
+ * `WITHDRAWAL` - mark that reverse record has to be created for given record in other account
 
 
 #### Error
