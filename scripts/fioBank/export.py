@@ -60,8 +60,27 @@ def loadRecords(token, fromDate: str, toDate: str):
 	def getNote(transaction):
 		return '' if transaction['column16'] is None else transaction['column16']['value']
 
+
+	def stripNoteInfo(note: str):
+		'''
+		Strip useless info from record note
+		'''
+		PREF_BUY = 'Nákup: '
+		PREF_WTH = 'Výběr z bankomatu: '
+
+		if note.startswith(PREF_BUY):
+			note = note[len(PREF_BUY):]
+			note = note.split(', dne')[0]
+		elif note.startswith(PREF_WTH):
+			note = note[len(PREF_WTH):]
+			note = note.split(', dne')[0]
+
+		return note
+
+
 	def getAmount(transaction):
 		return transaction['column1']['value']
+
 
 	def getDate(transaction):
 		#2015-10-16+0200 => 2015-10-16T00:00:00+0200
@@ -86,7 +105,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 					currency = rj['accountStatement']['info']['currency']
 					for transaction in transList['transaction']:
 						records.append({
-							'note': getNote(transaction),
+							'note': stripNoteInfo(getNote(transaction)),
 							'amount': getAmount(transaction),
 							'date': getDate(transaction),
 							'currency': currency
