@@ -78,7 +78,7 @@ def loadRecords(token, fromDate: str, toDate: str):
 					currency = rj['accountStatement']['info']['currency']
 					for transaction in transList['transaction']:
 						records.append({
-							'note': rutil.stripNoteInfo(rutil.getNote(transaction)),
+							'note': rutil.getSanitizedNote(transaction),
 							'amount': rutil.getAmount(transaction),
 							'date': rutil.getDate(transaction),
 							'currency': currency,

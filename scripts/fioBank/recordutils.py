@@ -48,6 +48,19 @@ def stripNoteInfo(note: str):
 	return note
 
 
+def getSanitizedNote(transaction):
+	'''
+	Get only required info from note, transform cases etc.
+	'''
+	def toTitleCase(s: str):
+		return s if len(s) < 3 or any([ x.islower() for x in s ]) else s.title()
+
+	note = stripNoteInfo(getNote(transaction))
+	note = " ".join([ toTitleCase(w) for w in note.split() ])
+
+	return note
+
+
 def getAmount(transaction):
 	return transaction['column1']['value']
 
