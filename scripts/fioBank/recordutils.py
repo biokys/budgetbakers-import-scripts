@@ -80,8 +80,9 @@ def getRecordFlags(transaction):
 	'''
 	flags = []
 	note = getNote(transaction)
+	amount = getAmount(transaction)
 
-	if isWithdrawalRecNote(note):
+	if isWithdrawalRecNote(note) && amount >= 200: # if less, it's withdrawal fee
 		flags.append(FLAG_WITHDRAWAL)
 
 	return flags
