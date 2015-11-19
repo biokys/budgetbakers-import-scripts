@@ -2,7 +2,7 @@
 This script serves for exporting payment records from FIO Bank API. For script usage see `--help`.
 
 ## Usage
-Script takes two these params:
+Script takes three these params:
 
  * `--token` -- personal token for accessing FIO Bank API.
  * `--initRunDate` -- from when to start fetching bank records
