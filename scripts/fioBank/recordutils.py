@@ -1,3 +1,4 @@
+from math import abs
 
 #
 # Note prefixes for record categorization
@@ -82,7 +83,7 @@ def getRecordFlags(transaction):
 	note = getNote(transaction)
 	amount = getAmount(transaction)
 
-	if isWithdrawalRecNote(note) and amount >= 200: # if less, it's withdrawal fee
+	if isWithdrawalRecNote(note) and abs(amount) >= 200: # if less, it's withdrawal fee
 		flags.append(FLAG_WITHDRAWAL)
 
 	return flags
