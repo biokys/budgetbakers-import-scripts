@@ -1,4 +1,3 @@
-from math import abs
 
 #
 # Note prefixes for record categorization
