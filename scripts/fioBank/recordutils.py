@@ -42,7 +42,6 @@ def stripNoteInfo(note: str):
 		note = note[len(PREF_BUY):]
 		note = note.split(', dne')[0]
 	elif isWithdrawalRecNote(note):
-		note = note[len(PREF_WTH):]
 		note = note.split(', dne')[0]
 
 	return note
