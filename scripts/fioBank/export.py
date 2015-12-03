@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
 	args = parser.parse_args()
 
-	token = args.token
+	token = args.token or "default_always_wrong_token"
 	lastRunDate = args.lastRunDate
 	initRunDate = args.initRunDate
 
